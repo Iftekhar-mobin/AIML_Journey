@@ -46,40 +46,71 @@ newgrp docker
 ## Resources are collected from https://www.youtube.com/playlist?list=PLZoTAELRMXVPS-dOaVbAux22vzqdgoGhG
 ## very very Important  https://www.youtube.com/watch?v=Xniji2m85LY&list=PLZoTAELRMXVPS-dOaVbAux22vzqdgoGhG&index=12
 
-### Tutorials
-AWS Setup for CICD (ECR)
-Create a IAM User 
-ifte_24_CICD  → Provide user access to the AWS Management Console - optional  - skip → permission option → Attach policies directly → search AmazonEC2Container → AmazonEC2ContainerRegistryFullAccess + AmazonEC2FullAccess
-(Attach this two permission policy) —> create user 
+# Tutorials in short
 
-Go to security credentials tab → Access keys → create command line access keys (CLI) → download csv file
-Create ECR repository → keep it private → Name it (ifte_24_cicd)
-Create an EC2 instance → launch Instance → provide webserver name 
-Select ubuntu (current pointing to AWS)
-Create keypair/use existing
-Allow http+https traffic from internet (checkbox)
-Instances → status (running)
-Go to security credentials tab → Access keys → create command line access keys (CLI) → download csv file
-Connect to the EC2 instances → if windows then convert .pem to ppk from puttygen (select all files to see *.pem)
-PuTTy → hostname → Public DNS  and User name “ ssh -i "ifte_24_CICD.pem" ubuntu@ec2-16-170-170-144.eu-north-1.compute.amazonaws.com” hence → ubuntu
-Install docker 
-curl -fsSL https://get.docker.com -o get-docker.sh
-sudo sh get-docker.sh
-sudo usermod -aG docker ubuntu
-newgrp docker
-Github → actions → runner → new self hosted runner → linux → run all the commands line by line from github generated runner script
-Enter the name of runner:--> self-hosted   
-Rest of the options are [Enter] use default values, continue till ./run.sh
-Go back to runner menu Github [selfHosted – Idle state] → any commit → push to EC2
-Go to settings→ secrets and variables → actions
-New Repository secret → Put information from the Excel file 
-AWS_ACCESS_KEY_ID, AWS_SECRET_ACCESS_KEY,  AWS_REGION (Top Right corner beside the profile), AWS_ECR_LOGIN_URI (from ECR details, use only up to .com part) 
-ECR_REPOSITORY_NAME → ifte_24_cicd Last part after .com/
-Actions → rerun workflow  -> if something goes wrong for reinitiate the process
-Go to EC2 instance → security → security groups → change inbound rules → open running port 5000 or other port specified in the app.py 
-Custom TCP -> port 5000 -> 0.0.0.0/0
+1. **Create IAM User**
+   - Provide user access to the AWS Management Console - optional
+   - Skip permission option
+   - Attach policies directly: AmazonEC2ContainerRegistryFullAccess, AmazonEC2FullAccess
+   - Create user
 
-If need to rerun and consumes all spaces by docker then remove container and images
-docker rmi -vf $(docker ps -aq) 
-Docker rmi -f $(docker images -aq)
-Docker system df 
+2. **Generate CLI Access Keys**
+   - Go to the security credentials tab
+   - Create command line access keys (CLI)
+   - Download CSV file
+
+3. **Create ECR Repository**
+   - Keep it private
+   - Name it (e.g., ifte_24_cicd)
+
+4. **Launch EC2 Instance**
+   - Provide webserver name
+   - Select Ubuntu
+   - Create keypair/use existing
+   - Allow HTTP and HTTPS traffic from the internet (checkbox)
+   - Check instance status (running)
+
+5. **Connect to EC2 Instance**
+   - If on Windows, convert .pem to .ppk using PuTTYgen
+   - PuTTY: Hostname → Public DNS, User name: `ssh -i "ifte_24_CICD.pem" ubuntu@ec2-16-170-170-144.eu-north-1.compute.amazonaws.com`
+   - Install Docker:
+     ```bash
+     curl -fsSL https://get.docker.com -o get-docker.sh
+     sudo sh get-docker.sh
+     sudo usermod -aG docker ubuntu
+     newgrp docker
+     ```
+
+6. **GitHub Actions Setup**
+   - Create a new self-hosted runner on GitHub
+   - Choose Linux
+   - Run all the commands line by line from the GitHub generated runner script
+   - Enter the name of runner: `self-hosted`
+   - Continue with default values until `./run.sh`
+   - Go back to runner menu on GitHub (selfHosted – Idle state)
+   - Trigger a push to EC2 by making any commit
+
+7. **Configure Repository Secrets and Variables**
+   - Go to settings → secrets and variables → actions
+   - Create new repository secret with information from the CSV file:
+     - AWS_ACCESS_KEY_ID
+     - AWS_SECRET_ACCESS_KEY
+     - AWS_REGION (Top Right corner beside the profile)
+     - AWS_ECR_LOGIN_URI (from ECR details, use only up to .com part)
+     - ECR_REPOSITORY_NAME (e.g., ifte_24_cicd Last part after .com/)
+
+8. **Rerun Workflow**
+   - If something goes wrong, rerun the workflow to reinitiate the process
+
+9. **Open Running Port**
+   - Go to EC2 instance → security → security groups
+   - Change inbound rules to open running port (e.g., 5000) or other port specified in the app.py:
+     - Custom TCP -> port 5000 -> 0.0.0.0/0
+
+10. **Cleanup Docker Resources (if needed)**
+    - Remove containers and images if consuming all space:
+      ```bash
+      docker rmi -vf $(docker ps -aq)
+      docker rmi -f $(docker images -aq)
+      docker system df
+      ```
