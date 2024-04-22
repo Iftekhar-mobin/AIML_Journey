@@ -1,3 +1,48 @@
+# AWS CI/CD Setup Guide
+
+This guide provides step-by-step instructions on setting up Continuous Integration and Continuous Deployment (CI/CD) pipelines using AWS services. The resources are collected from [this YouTube playlist](https://www.youtube.com/playlist?list=PLZoTAELRMXVPS-dOaVbAux22vzqdgoGhG).
+
+## AWS Setup for CI/CD (ECR)
+
+### Create IAM User
+
+1. **Create IAM User**: Visit the AWS Management Console and create a new IAM user. Provide access permissions for AmazonEC2ContainerRegistryFullAccess and AmazonEC2FullAccess.
+
+2. **Access Keys**: Generate CLI access keys for the IAM user and download the CSV file containing the keys.
+
+### Create ECR Repository and EC2 Instance
+
+1. **Create ECR Repository**: Create a private ECR repository with a name (e.g., `ifte_24_cicd`).
+
+2. **Launch EC2 Instance**: Launch an EC2 instance, select Ubuntu, and configure security groups to allow HTTP and HTTPS traffic.
+
+### Connect to EC2 Instance and Install Docker
+
+Connect to the EC2 instance using PuTTY (for Windows) or SSH (for other platforms) and install Docker:
+
+```bash
+curl -fsSL https://get.docker.com -o get-docker.sh
+sudo sh get-docker.sh
+sudo usermod -aG docker ubuntu
+newgrp docker
+```
+
+### GitHub Actions Setup
+
+1. **Create Self-hosted Runner**: Create a new self-hosted runner on GitHub and follow the instructions to set it up.
+
+2. **Configure Repository Secrets**: Go to repository settings on GitHub, and add secrets for AWS credentials and variables needed for the CI/CD process.
+
+3. **Run Workflow**: Push commits to the repository to trigger the CI/CD workflow. If needed, rerun the workflow from the Actions tab.
+
+### Additional Notes
+
+- Ensure proper permissions and access controls are set up for AWS services.
+- Regularly monitor the CI/CD pipelines for any errors or failures.
+- Refer to AWS documentation for more advanced configuration options and troubleshooting.
+
+
+
 ## Resources are collected from https://www.youtube.com/playlist?list=PLZoTAELRMXVPS-dOaVbAux22vzqdgoGhG
 ## very very Important  https://www.youtube.com/watch?v=Xniji2m85LY&list=PLZoTAELRMXVPS-dOaVbAux22vzqdgoGhG&index=12
 
